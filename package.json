@@ -1,0 +1,35 @@
+{
+  "type": "module",
+  "name": "svg-wasm",
+  "version": "0.1.3",
+  "description": "🎚️ A WASM-powered library for converting SVG images to WebP and JPEG formats.",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "unpkg": "dist/index.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "node": "./dist/index.mjs",
+      "default": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./svg_wasm_bg.wasm": "./svg_wasm_bg.wasm"
+  },
+  "files": [
+    "dist",
+    "NOTICE",
+    "svg_wasm_bg.wasm"
+  ],
+  "scripts": {
+    "build": "rm -rf pkg && rm -rf ./svg_wasm_bg.wasm && npm run build:wasm && npm run bundle:dts && node bundle && cp ./pkg/svg_wasm_bg.wasm ./svg_wasm_bg.wasm",
+    "build:wasm": "wasm-pack build --target web",
+    "bundle:dts": "dts-bundle-generator --no-banner --external-types -o dist/index.d.ts lib/index.ts"
+  },
+  "devDependencies": {
+    "dts-bundle-generator": "^8.0.0",
+    "esbuild": "^0.18.0",
+    "typescript": "^5.0.0"
+  }
+}
