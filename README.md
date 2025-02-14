@@ -18,7 +18,7 @@ Usage:
 
   const svg = `<svg>...</svg>`;
   
-  await SvgWasm.svg2jpeg(svg); // ArrayBuffer
-  await SvgWasm.svg2webp(svg); // ArrayBuffer
+  await SvgWasm.svg2jpeg(svg); // Uint8Array
+  await SvgWasm.svg2webp(svg); // Uint8Array
 })()
 ```
