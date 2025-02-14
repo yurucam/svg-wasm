@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "svg-wasm",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "🎚️ A WASM-powered library for converting SVG images to WebP and JPEG formats.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -17,6 +17,12 @@
     },
     "./svg_wasm_bg.wasm": "./svg_wasm_bg.wasm"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yurucam/svg-wasm"
+  },
+  "author": "YURUCAM",
+  "license": "MIT",
   "files": [
     "dist",
     "NOTICE",
@@ -31,5 +37,13 @@
     "dts-bundle-generator": "^8.0.0",
     "esbuild": "^0.18.0",
     "typescript": "^5.0.0"
-  }
+  },
+  "keywords": [
+    "svg",
+    "wasm",
+    "webp",
+    "jpeg",
+    "image",
+    "convert"
+  ]
 }
