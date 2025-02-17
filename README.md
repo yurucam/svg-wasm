@@ -20,5 +20,6 @@ Usage:
   
   await SvgWasm.svg2jpeg(svg); // Uint8Array
   await SvgWasm.svg2webp(svg); // Uint8Array
-})()
+  await SvgWasm.svg2pixels(svg); // Uint8Array
+})();
 ```

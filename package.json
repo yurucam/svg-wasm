@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "svg-wasm",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "🎚️ A WASM-powered library for converting SVG images to WebP and JPEG formats.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

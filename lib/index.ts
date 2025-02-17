@@ -81,4 +81,25 @@ export default class SvgWasm {
       converter.free();
     }
   }
+
+  static async svg2pixels(
+    svg: string,
+    opts?: ConverterOptions & ConvertOptions
+  ): Promise<Uint8Array> {
+    const converter = await this.createConverter(opts);
+
+    try {
+      return converter.convert_to_pixels(
+        svg,
+        opts?.scale,
+        opts?.width,
+        opts?.height,
+        opts?.backgroundColor
+      );
+    } catch (e) {
+      throw e;
+    } finally {
+      converter.free();
+    }
+  }
 }

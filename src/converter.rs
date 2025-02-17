@@ -240,6 +240,92 @@ impl Converter {
     }
 
     #[wasm_bindgen]
+    pub fn convert_to_pixels(
+        &self,
+        svg: &str,
+        scale: Option<f32>,
+        width: Option<f32>,
+        height: Option<f32>,
+        background: Option<String>,
+    ) -> Result<Vec<u8>, JsValue> {
+        let fontdb = load_fonts(
+            &self.fonts,
+            self.serif_family.as_deref(),
+            self.sans_serif_family.as_deref(),
+            self.cursive_family.as_deref(),
+            self.fantasy_family.as_deref(),
+            self.monospace_family.as_deref(),
+        );
+        let faces = &mut fontdb.faces();
+        let default_font_family = if fontdb.is_empty() {
+            "sans-serif".to_string()
+        } else {
+            faces.next().unwrap().families[0].0.to_string()
+        };
+        let svg_options = Options {
+            resources_dir: None,
+            dpi: 96.0,
+            font_family: default_font_family.clone(),
+            font_size: 12.0,
+            languages: vec!["en".to_string()],
+            shape_rendering: resvg::usvg::ShapeRendering::GeometricPrecision,
+            text_rendering: resvg::usvg::TextRendering::OptimizeLegibility,
+            image_rendering: resvg::usvg::ImageRendering::OptimizeQuality,
+            default_size: Size::from_wh(width.unwrap_or(100.0), height.unwrap_or(100.0))
+                .ok_or_else(|| JsValue::from_str("Invalid width or height"))?,
+            image_href_resolver: resvg::usvg::ImageHrefResolver::default(),
+        };
+
+        let scale = scale.unwrap_or(1.0);
+        let mut tree =
+            Tree::from_str(svg, &svg_options).map_err(|e| JsValue::from_str(&e.to_string()))?;
+        tree.convert_text(&fontdb);
+
+        let svg_size = tree.size;
+        let (width, height) = match (width, height) {
+            (Some(w), Some(h)) => (w.round() as u32, h.round() as u32),
+            (Some(w), _) => (
+                w.round() as u32,
+                (svg_size.height() * (w / svg_size.width())) as u32,
+            ),
+            (_, Some(h)) => (
+                (svg_size.width() * (h / svg_size.height())) as u32,
+                h.round() as u32,
+            ),
+            _ => (
+                ((svg_size.width().round() as f32) * scale) as u32,
+                ((svg_size.height().round() as f32) * scale) as u32,
+            ),
+        };
+
+        let mut pixmap = Pixmap::new(width, height)
+            .ok_or_else(|| JsValue::from_str("Invalid width or height"))?;
+
+        if let Some(color) = background {
+            pixmap.fill(parse_color_string(&color));
+        }
+
+        let rtree = resvg::Tree::from_usvg(&tree);
+
+        let size = tree.size.to_int_size();
+        let size1 = size.to_size();
+        let fit_to_size = IntSize::from_wh(width, height).map(|s| size.scale_to(s));
+        let size2 = match fit_to_size {
+            Some(v) => v.to_size(),
+            None => size.to_size(),
+        };
+
+        let tx = Transform::from_scale(
+            size2.width() as f32 / size1.width() as f32,
+            size2.height() as f32 / size1.height() as f32,
+        );
+
+        rtree.render(tx, &mut pixmap.as_mut());
+
+        Ok(pixmap.data().to_vec())
+    }
+
+    #[wasm_bindgen]
     pub fn list_fonts(&self) -> Box<[JsValue]> {
         load_fonts(&self.fonts, None, None, None, None, None)
             .faces()
